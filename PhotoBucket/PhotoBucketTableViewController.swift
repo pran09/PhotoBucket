@@ -127,7 +127,7 @@ class PhotoBucketTableViewController: UITableViewController {
 			self.showAddDialog()
 		}
 		menu.addAction(addPhotoButton)
-		let signOutButton = UIAlertAction(title: "Sign out", style: .default) { (action) in
+		let signOutButton = UIAlertAction(title: "Sign out", style: .destructive) { (action) in
 			do {
 				try Auth.auth().signOut()
 				print("you are now signed out")

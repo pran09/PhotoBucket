@@ -18,13 +18,11 @@ class PhotoBucketTableViewController: UITableViewController {
 	let noPhotoCellIdentifier = "NoPhotosCell"
 	let showDetailSegueIdentifier = "ShowDetailSegue"
 	var photoBuckets = [Photo]()
-	
-	
-	override func viewDidLoad() {
+	    
+    override func viewDidLoad() {
 		super.viewDidLoad()
-		self.navigationItem.leftBarButtonItem = self.editButtonItem
-		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAddDialog))
 		navigationItem.title = "Photo Bucket"
+		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Menu", style: .plain, target: self, action: #selector(showActionMenu))
 		photosRef = Firestore.firestore().collection("photos")
 	}
 	
@@ -117,6 +115,29 @@ class PhotoBucketTableViewController: UITableViewController {
 		alertController.addAction(cancelAction)
 		alertController.addAction(createPhotoAction)
 		present(alertController, animated: true, completion: nil)
+	}
+	
+	@objc func showActionMenu() {
+		let menu:UIAlertController = UIAlertController(title: "Photo Bucket Options", message: nil, preferredStyle: .actionSheet)
+		let cancelButton = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+			print("Pressed cancel from the action menu")
+		}
+		menu.addAction(cancelButton)
+		let addPhotoButton = UIAlertAction(title: "Add Photo", style: .default) { (action) in
+			self.showAddDialog()
+		}
+		menu.addAction(addPhotoButton)
+		let signOutButton = UIAlertAction(title: "Sign out", style: .default) { (action) in
+			do {
+				try Auth.auth().signOut()
+				print("you are now signed out")
+				self.appDelegate.showLoginViewController()
+			} catch {
+				print("Error on sign out: \(error.localizedDescription)")
+			}
+		}
+		menu.addAction(signOutButton)
+		self.present(menu, animated: true, completion: nil)
 	}
 	
 	func getRandomImageURL() -> String {

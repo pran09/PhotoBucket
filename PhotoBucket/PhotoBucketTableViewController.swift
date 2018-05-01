@@ -24,7 +24,7 @@ class PhotoBucketTableViewController: UITableViewController {
 		super.viewDidLoad()
 		self.navigationItem.leftBarButtonItem = self.editButtonItem
 		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAddDialog))
-		
+		navigationItem.title = "Photo Bucket"
 		photosRef = Firestore.firestore().collection("photos")
 	}
 	

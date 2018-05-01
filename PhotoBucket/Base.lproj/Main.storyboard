@@ -72,7 +72,7 @@
         <!--Photo Bucket View Controller-->
         <scene sceneID="ZhI-ph-lc8">
             <objects>
-                <viewController id="KCu-dh-3kN" customClass="PhotoBucketViewController" customModule="PhotoBucket" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PhotoBucketViewController" id="KCu-dh-3kN" customClass="PhotoBucketViewController" customModule="PhotoBucket" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dWV-35-mWs">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -126,10 +126,66 @@
             </objects>
             <point key="canvasLocation" x="1048.8" y="-183.05847076461771"/>
         </scene>
+        <!--Login View Controller-->
+        <scene sceneID="7li-9O-DWs">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" id="083-YU-wtX" customClass="LoginViewController" customModule="PhotoBucket" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Mg5-aL-rUR">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photo Bucket" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lui-IV-BJk" userLabel="Title Label">
+                                <rect key="frame" x="99" y="215" width="178" height="37"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="31"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mv9-fb-LuN" userLabel="Google Login Button" customClass="GIDSignInButton">
+                                <rect key="frame" x="115" y="408" width="145" height="32"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ccG-tS-I8J" userLabel="Rosefire Login Button">
+                                <rect key="frame" x="98" y="483" width="179" height="34"/>
+                                <color key="backgroundColor" red="0.65835492227979275" green="0.0" blue="0.1926815256979211" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="Cb6-Ej-cty"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="179" id="PIz-cS-eAY"/>
+                                </constraints>
+                                <state key="normal" title="Login with Rosefire">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="rosefireLogin:" destination="083-YU-wtX" eventType="touchUpInside" id="GZp-bm-Gh3"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.99996501207351685" green="0.83709167975852783" blue="0.85597027423649164" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ccG-tS-I8J" firstAttribute="centerX" secondItem="SFG-uh-nmN" secondAttribute="centerX" id="34E-lB-MsY"/>
+                            <constraint firstItem="mv9-fb-LuN" firstAttribute="top" secondItem="Lui-IV-BJk" secondAttribute="bottom" constant="156" id="OF6-hu-QsZ"/>
+                            <constraint firstItem="mv9-fb-LuN" firstAttribute="leading" secondItem="SFG-uh-nmN" secondAttribute="leading" constant="115" id="UYh-ul-95y"/>
+                            <constraint firstItem="Lui-IV-BJk" firstAttribute="centerX" secondItem="SFG-uh-nmN" secondAttribute="centerX" id="WS0-GN-OzQ"/>
+                            <constraint firstItem="mv9-fb-LuN" firstAttribute="centerX" secondItem="SFG-uh-nmN" secondAttribute="centerX" id="gfr-yw-bKv"/>
+                            <constraint firstItem="Lui-IV-BJk" firstAttribute="top" secondItem="SFG-uh-nmN" secondAttribute="top" constant="195" id="gkA-Pp-Thb"/>
+                            <constraint firstAttribute="bottom" secondItem="mv9-fb-LuN" secondAttribute="bottom" constant="227" id="io8-Oi-zLP"/>
+                            <constraint firstItem="SFG-uh-nmN" firstAttribute="bottom" secondItem="ccG-tS-I8J" secondAttribute="bottom" constant="150" id="jey-x9-Mzt"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="SFG-uh-nmN"/>
+                    </view>
+                    <connections>
+                        <outlet property="googleLoginButton" destination="mv9-fb-LuN" id="1ux-He-4Vd"/>
+                        <outlet property="rosefireLoginButton" destination="ccG-tS-I8J" id="7Hc-uQ-nDW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WCU-yK-XF5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-642.39999999999998" y="-958.4707646176912"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="dQl-vR-pdQ">
             <objects>
-                <navigationController id="dfy-bR-sVK" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationController" id="dfy-bR-sVK" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="RxP-xr-HIX">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>

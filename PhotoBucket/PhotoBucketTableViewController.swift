@@ -18,6 +18,7 @@ class PhotoBucketTableViewController: UITableViewController {
 	let noPhotoCellIdentifier = "NoPhotosCell"
 	let showDetailSegueIdentifier = "ShowDetailSegue"
 	var photoBuckets = [Photo]()
+	var showPhotos: Bool = true  //boolean is true if current mode is set to show all photos
 	    
     override func viewDidLoad() {
 		super.viewDidLoad()
@@ -100,7 +101,7 @@ class PhotoBucketTableViewController: UITableViewController {
 			let imageURLTextField = alertController.textFields![1]
 			print("captionTextField = \(captionTextField.text!)")
 			print("imageURLTextField = \(imageURLTextField.text!)")
-			let newPhotoBucket = Photo(caption: captionTextField.text!, imageURL: imageURLTextField.text!)
+			let newPhotoBucket = Photo(caption: captionTextField.text!, imageURL: imageURLTextField.text!, uid: (Auth.auth().currentUser?.uid)!)
 			if imageURLTextField.text == "" {
 				newPhotoBucket.imageURL = self.getRandomImageURL()
 			}
@@ -127,7 +128,13 @@ class PhotoBucketTableViewController: UITableViewController {
 			self.showAddDialog()
 		}
 		menu.addAction(addPhotoButton)
-		let signOutButton = UIAlertAction(title: "Sign out", style: .destructive) { (action) in
+		let showPhotosButton = UIAlertAction(title: "Show My Photos", style: .default) { (action) in
+			if !self.showPhotos { //show only my photos, do query
+				
+			}
+		}
+		menu.addAction(showPhotosButton)
+		let signOutButton = UIAlertAction(title: "Sign Out", style: .destructive) { (action) in
 			do {
 				try Auth.auth().signOut()
 				print("you are now signed out")

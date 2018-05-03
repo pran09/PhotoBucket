@@ -23,8 +23,10 @@ class PhotoBucketViewController: UIViewController {
 		super.viewDidLoad()
 		imageView.image = nil
         captionLabel.text = photo?.caption
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(showEditDialog))
-        navigationItem.rightBarButtonItem?.title = "Edit Caption"
+		if photo?.uid == Auth.auth().currentUser?.uid {
+        	navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(showEditDialog))
+        	navigationItem.rightBarButtonItem?.title = "Edit Caption"
+		}
         activityIndicator.startAnimating()
 	}
     

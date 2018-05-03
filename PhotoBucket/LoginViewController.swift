@@ -19,11 +19,8 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-		
 		GIDSignIn.sharedInstance().uiDelegate = self
 		googleLoginButton.style = .wide
-		
-		
 	}
     @IBAction func rosefireLogin(_ sender: Any) {
 		Rosefire.sharedDelegate().uiDelegate = self

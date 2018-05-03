@@ -85,7 +85,7 @@ class PhotoBucketTableViewController: UITableViewController {
 	
 	func photoRemoved(_ document: DocumentSnapshot) {
 		let removedPhoto = Photo(documentSnapshot: document)
-		//if removedPhoto.uid != Auth.auth().currentUser?.uid {return}
+		if removedPhoto.uid != Auth.auth().currentUser?.uid {return}
 		for i in 0..<photoBuckets.count {
 			if photoBuckets[i].id == removedPhoto.id {
 				photoBuckets.remove(at: i)
@@ -228,7 +228,6 @@ class PhotoBucketTableViewController: UITableViewController {
 		return max(photoBuckets.count, 1)
 	}
 	
-	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		var cell: UITableViewCell
 		if photoBuckets.count == 0 {
@@ -244,6 +243,7 @@ class PhotoBucketTableViewController: UITableViewController {
 	
 	// Override to support conditional editing of the table view.
 	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+		//return photoBuckets[indexPath.row].uid == Auth.auth().currentUser?.uid
 		return photoBuckets.count > 0
 	}
 
@@ -253,7 +253,9 @@ class PhotoBucketTableViewController: UITableViewController {
 	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
 		if editingStyle == .delete {
 			let photoToDelete = photoBuckets[indexPath.row]
-			photosRef.document(photoToDelete.id!).delete()
+			if photoToDelete.uid == Auth.auth().currentUser?.uid {
+				photosRef.document(photoToDelete.id!).delete()
+			}
 		}
 	}
 	
@@ -267,6 +269,4 @@ class PhotoBucketTableViewController: UITableViewController {
 			}
 		}
 	}
-
-	
 }

@@ -47,8 +47,11 @@ class PhotoBucketTableViewController: UITableViewController {
 					print("Modified photo: \(docChange.document.data())")
 					self.photoModified(docChange.document)
 				} else if docChange.type == .removed {
-					print("Removed photo: \(docChange.document.data())")
-					self.photoRemoved(docChange.document)
+					let photo = Photo(documentSnapshot: docChange.document)
+					if photo.uid == Auth.auth().currentUser?.uid {
+						print("Removed photo: \(docChange.document.data())")
+						self.photoRemoved(docChange.document)
+					}
 				}
 				self.photoBuckets.sort(by: { (p1, p2) -> Bool in
 					return p1.created > p2.created
@@ -82,7 +85,7 @@ class PhotoBucketTableViewController: UITableViewController {
 	
 	func photoRemoved(_ document: DocumentSnapshot) {
 		let removedPhoto = Photo(documentSnapshot: document)
-		if removedPhoto.uid != Auth.auth().currentUser?.uid {return}
+		//if removedPhoto.uid != Auth.auth().currentUser?.uid {return}
 		for i in 0..<photoBuckets.count {
 			if photoBuckets[i].id == removedPhoto.id {
 				photoBuckets.remove(at: i)
@@ -110,12 +113,7 @@ class PhotoBucketTableViewController: UITableViewController {
 				newPhotoBucket.imageURL = self.getRandomImageURL()
 			}
 			self.photosRef.addDocument(data: newPhotoBucket.data)
-			
-//			if self.photoBuckets.count == 1 {
-//				self.tableView.reloadData()
-//			} else {
-//				self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: UITableViewRowAnimation.top)
-//			}
+			self.tableView.reloadData()
 		}
 		alertController.addAction(cancelAction)
 		alertController.addAction(createPhotoAction)
@@ -132,6 +130,7 @@ class PhotoBucketTableViewController: UITableViewController {
 		
 		let addPhotoButton = UIAlertAction(title: "Add Photo", style: .default) { (action) in
 			self.showAddDialog()
+			self.tableView.reloadData()
 		}
 		menu.addAction(addPhotoButton)
 		
@@ -141,7 +140,7 @@ class PhotoBucketTableViewController: UITableViewController {
 		let uidQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
 		uidQuery.getDocuments { (querySnapshot, error) in
 			if let error = error {
-				print("Error getting query for edit button: \(error.localizedDescription)")
+				print("Error finding query for edit button: \(error.localizedDescription)")
 			}
 			if (querySnapshot?.isEmpty)! {
 				editPhotoButton.isEnabled = false

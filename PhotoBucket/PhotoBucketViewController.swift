@@ -23,10 +23,6 @@ class PhotoBucketViewController: UIViewController {
 		super.viewDidLoad()
 		imageView.image = nil
         captionLabel.text = photo?.caption
-		if photo?.uid == Auth.auth().currentUser?.uid {
-        	navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(showEditDialog))
-        	navigationItem.rightBarButtonItem?.title = "Edit Caption"
-		}
         activityIndicator.startAnimating()
 	}
     
@@ -41,6 +37,10 @@ class PhotoBucketViewController: UIViewController {
 				print("This document got deleted")
 			}
 			self.photo = Photo(documentSnapshot: documentSnapshot!)
+			if  self.photo?.uid == Auth.auth().currentUser?.uid {
+				self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(self.showEditDialog))
+				self.navigationItem.rightBarButtonItem?.title = "Edit Caption"
+			}
 			self.updateView()
 		})
     }

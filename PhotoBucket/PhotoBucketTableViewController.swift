@@ -18,7 +18,7 @@ class PhotoBucketTableViewController: UITableViewController {
 	let noPhotoCellIdentifier = "NoPhotosCell"
 	let showDetailSegueIdentifier = "ShowDetailSegue"
 	var photoBuckets = [Photo]()
-	var showPhotos: Bool = true  //boolean is true if current mode is set to show all photos
+	var showAllPhotos: Bool = true  //boolean is true if current mode is set to show all photos
 	    
     override func viewDidLoad() {
 		super.viewDidLoad()
@@ -30,20 +30,24 @@ class PhotoBucketTableViewController: UITableViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		photoBuckets.removeAll()
+		loadOriginalPhotoBuckets()
+	}
+	
+	func loadOriginalPhotoBuckets() {
 		photosListener = photosRef.order(by: "created", descending: true).addSnapshotListener({ (querySnapshot, error) in
 			guard let snapshot = querySnapshot else {
-				print("Error fetching captions: \(String(describing: error?.localizedDescription))")
+				print("Error fetching photos: \(String(describing: error?.localizedDescription))")
 				return
 			}
 			snapshot.documentChanges.forEach({ (docChange) in
 				if docChange.type == .added {
-					print("New caption: \(docChange.document.data())")
+					print("New photo: \(docChange.document.data())")
 					self.photoAdded(docChange.document)
 				} else if docChange.type == .modified {
-					print("Modified caption: \(docChange.document.data())")
+					print("Modified photo: \(docChange.document.data())")
 					self.photoModified(docChange.document)
 				} else if docChange.type == .removed {
-					print("Removed caption: \(docChange.document.data())")
+					print("Removed photo: \(docChange.document.data())")
 					self.photoRemoved(docChange.document)
 				}
 				self.photoBuckets.sort(by: { (p1, p2) -> Bool in
@@ -128,10 +132,48 @@ class PhotoBucketTableViewController: UITableViewController {
 			self.showAddDialog()
 		}
 		menu.addAction(addPhotoButton)
+		let editPhotoButton = UIAlertAction(title: "Edit", style: .default) { (action) in
+			
+		}
+		menu.addAction(editPhotoButton)
 		let showPhotosButton = UIAlertAction(title: "Show My Photos", style: .default) { (action) in
-			if !self.showPhotos { //show only my photos, do query
-				
+			if self.showAllPhotos { //show only my photos, do query
+				let uidQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
+				self.photoBuckets.removeAll()
+				uidQuery.getDocuments(completion: { (querySnapshot, error) in
+					if let error = error {
+						print("Error getting documents from query: \(error.localizedDescription)")
+					} else {
+						querySnapshot?.documentChanges.forEach({ (docChange) in
+							if docChange.type == .added {
+								print("New query photo: \(docChange.document.data())")
+								self.photoAdded(docChange.document)
+							} else if docChange.type == .modified {
+								print("Modified query photo: \(docChange.document.data())")
+								self.photoModified(docChange.document)
+							} else if docChange.type == .removed {
+								print("Removed query photo: \(docChange.document.data())")
+								self.photoRemoved(docChange.document)
+							}
+							self.photoBuckets.sort(by: { (p1, p2) -> Bool in
+								return p1.created > p2.created
+							})
+						})
+						self.tableView.reloadData()
+					}
+				})
+				self.showAllPhotos = false
+			} else {
+				self.photoBuckets.removeAll()
+				self.loadOriginalPhotoBuckets()
+				self.showAllPhotos = true
 			}
+		}
+		if !self.showAllPhotos {
+			showPhotosButton.setValue("Show All Photos", forKey: "title")
+		} else {
+			showPhotosButton.setValue("Show My Photos", forKeyPath: "title")
+			
 		}
 		menu.addAction(showPhotosButton)
 		let signOutButton = UIAlertAction(title: "Sign Out", style: .destructive) { (action) in

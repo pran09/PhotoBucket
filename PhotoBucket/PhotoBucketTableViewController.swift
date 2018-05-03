@@ -135,7 +135,7 @@ class PhotoBucketTableViewController: UITableViewController {
 		}
 		menu.addAction(addPhotoButton)
 		
-		let editPhotoButton = UIAlertAction(title: "Edit", style: .default) { (action) in
+		let editPhotoButton = UIAlertAction(title: "Select Photos to Delete", style: .default) { (action) in
 			if !self.editingMode { //go into editing mode
 				self.editingMode = true
 				let editingQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
@@ -149,8 +149,8 @@ class PhotoBucketTableViewController: UITableViewController {
 						editingPhotos.append(photo)
 					}
 				})
-				for photo in self.photoBuckets {
-					if editingPhotos.contains(photo) {
+				for i in 0..<self.photoBuckets.count {
+					if editingPhotos.contains(self.photoBuckets[i]) {
 						
 					}
 				}
@@ -158,17 +158,22 @@ class PhotoBucketTableViewController: UITableViewController {
 				self.editingMode = false
 			}
 		}
+		var isEditable: Bool = false
+		for photo in photoBuckets {
+			if photo.uid == Auth.auth().currentUser?.uid {
+				isEditable = true
+			}
+		}
+		editPhotoButton.isEnabled = isEditable
 		let uidQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
 		uidQuery.getDocuments { (querySnapshot, error) in
 			if let error = error {
 				print("Error finding query for edit button: \(error.localizedDescription)")
 			}
 			if (querySnapshot?.isEmpty)! {
-				editPhotoButton.isEnabled = false
 			} else {
-				editPhotoButton.isEnabled = true
 				if !self.editingMode {
-					editPhotoButton.setValue("Edit", forKey: "title")
+					editPhotoButton.setValue("Select Photos to Delete", forKey: "title")
 				} else {
 					editPhotoButton.setValue("Done Editing", forKey: "title")
 				}
@@ -269,8 +274,6 @@ class PhotoBucketTableViewController: UITableViewController {
 	
 	// Override to support conditional editing of the table view.
 	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-		print("indexPath.row = \(indexPath.row)")
-		print("photoBucket.count = \(photoBuckets.count)")
 		if photoBuckets.count > 0 {
 			return photoBuckets[indexPath.row].uid == Auth.auth().currentUser?.uid
 		}

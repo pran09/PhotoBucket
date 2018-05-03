@@ -30,10 +30,10 @@ class PhotoBucketTableViewController: UITableViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		photoBuckets.removeAll()
-		loadOriginalPhotoBuckets()
+		loadAllPhotoBuckets()
 	}
 	
-	func loadOriginalPhotoBuckets() {
+	func loadAllPhotoBuckets() {
 		photosListener = photosRef.order(by: "created", descending: true).addSnapshotListener({ (querySnapshot, error) in
 			guard let snapshot = querySnapshot else {
 				print("Error fetching photos: \(String(describing: error?.localizedDescription))")
@@ -82,7 +82,7 @@ class PhotoBucketTableViewController: UITableViewController {
 	
 	func photoRemoved(_ document: DocumentSnapshot) {
 		let removedPhoto = Photo(documentSnapshot: document)
-		
+		if removedPhoto.uid != Auth.auth().currentUser?.uid {return}
 		for i in 0..<photoBuckets.count {
 			if photoBuckets[i].id == removedPhoto.id {
 				photoBuckets.remove(at: i)
@@ -124,18 +124,34 @@ class PhotoBucketTableViewController: UITableViewController {
 	
 	@objc func showActionMenu() {
 		let menu:UIAlertController = UIAlertController(title: "Photo Bucket Options", message: nil, preferredStyle: .actionSheet)
+		
 		let cancelButton = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
 			print("Pressed cancel from the action menu")
 		}
 		menu.addAction(cancelButton)
+		
 		let addPhotoButton = UIAlertAction(title: "Add Photo", style: .default) { (action) in
 			self.showAddDialog()
 		}
 		menu.addAction(addPhotoButton)
+		
 		let editPhotoButton = UIAlertAction(title: "Edit", style: .default) { (action) in
 			
 		}
+		let uidQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
+		uidQuery.getDocuments { (querySnapshot, error) in
+			if let error = error {
+				print("Error getting query for edit button: \(error.localizedDescription)")
+			}
+			if (querySnapshot?.isEmpty)! {
+				editPhotoButton.isEnabled = false
+			} else {
+				editPhotoButton.isEnabled = true
+			}
+		}
+		
 		menu.addAction(editPhotoButton)
+		
 		let showPhotosButton = UIAlertAction(title: "Show My Photos", style: .default) { (action) in
 			if self.showAllPhotos { //show only my photos, do query
 				let uidQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
@@ -165,7 +181,7 @@ class PhotoBucketTableViewController: UITableViewController {
 				self.showAllPhotos = false
 			} else {
 				self.photoBuckets.removeAll()
-				self.loadOriginalPhotoBuckets()
+				self.loadAllPhotoBuckets()
 				self.showAllPhotos = true
 			}
 		}
@@ -176,16 +192,18 @@ class PhotoBucketTableViewController: UITableViewController {
 			
 		}
 		menu.addAction(showPhotosButton)
+		
 		let signOutButton = UIAlertAction(title: "Sign Out", style: .destructive) { (action) in
 			do {
 				try Auth.auth().signOut()
-				print("you are now signed out")
+				print("You are now signed out")
 				self.appDelegate.showLoginViewController()
 			} catch {
 				print("Error on sign out: \(error.localizedDescription)")
 			}
 		}
 		menu.addAction(signOutButton)
+		
 		self.present(menu, animated: true, completion: nil)
 	}
 	

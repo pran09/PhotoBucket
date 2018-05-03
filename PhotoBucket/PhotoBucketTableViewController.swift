@@ -158,26 +158,16 @@ class PhotoBucketTableViewController: UITableViewController {
 				self.editingMode = false
 			}
 		}
-		var isEditable: Bool = false
+		editPhotoButton.isEnabled = false
 		for photo in photoBuckets {
 			if photo.uid == Auth.auth().currentUser?.uid {
-				isEditable = true
+				editPhotoButton.isEnabled = true
 			}
 		}
-		editPhotoButton.isEnabled = isEditable
-		let uidQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
-		uidQuery.getDocuments { (querySnapshot, error) in
-			if let error = error {
-				print("Error finding query for edit button: \(error.localizedDescription)")
-			}
-			if (querySnapshot?.isEmpty)! {
-			} else {
-				if !self.editingMode {
-					editPhotoButton.setValue("Select Photos to Delete", forKey: "title")
-				} else {
-					editPhotoButton.setValue("Done Editing", forKey: "title")
-				}
-			}
+		if !self.editingMode {
+			editPhotoButton.setValue("Select Photos to Delete", forKey: "title")
+		} else {
+			editPhotoButton.setValue("Done Editing", forKey: "title")
 		}
 		
 		menu.addAction(editPhotoButton)

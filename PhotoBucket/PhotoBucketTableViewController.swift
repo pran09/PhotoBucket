@@ -20,8 +20,8 @@ class PhotoBucketTableViewController: UITableViewController {
 	var photoBuckets = [Photo]()
 	var showAllPhotos: Bool = true  //boolean is true if current mode is set to show all photos
 	var editingMode: Bool = false
-	    
-    override func viewDidLoad() {
+	
+	override func viewDidLoad() {
 		super.viewDidLoad()
 		navigationItem.title = "Photo Bucket"
 		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Menu", style: .plain, target: self, action: #selector(showActionMenu))
@@ -109,11 +109,11 @@ class PhotoBucketTableViewController: UITableViewController {
 			let imageURLTextField = alertController.textFields![1]
 			print("captionTextField = \(captionTextField.text!)")
 			print("imageURLTextField = \(imageURLTextField.text!)")
-			let newPhotoBucket = Photo(caption: captionTextField.text!, imageURL: imageURLTextField.text!, uid: (Auth.auth().currentUser?.uid)!)
+			let newPhoto = Photo(caption: captionTextField.text!, imageURL: imageURLTextField.text!, uid: (Auth.auth().currentUser?.uid)!)
 			if imageURLTextField.text == "" {
-				newPhotoBucket.imageURL = self.getRandomImageURL()
+				newPhoto.imageURL = self.getRandomImageURL()
 			}
-			self.photosRef.addDocument(data: newPhotoBucket.data)
+			self.photosRef.addDocument(data: newPhoto.data)
 			self.tableView.reloadData()
 		}
 		alertController.addAction(cancelAction)
@@ -138,24 +138,16 @@ class PhotoBucketTableViewController: UITableViewController {
 		let editPhotoButton = UIAlertAction(title: "Select Photos to Delete", style: .default) { (action) in
 			if !self.editingMode { //go into editing mode
 				self.editingMode = true
-				let editingQuery = self.photosRef.whereField("uid", isEqualTo: Auth.auth().currentUser?.uid as Any)
-				var editingPhotos = [Photo]()
-				editingQuery.getDocuments(completion: { (querySnapshot, error) in
-					if let error = error {
-						print("Error getting documents for editing: \(error.localizedDescription)")
-					}
-					for doc in (querySnapshot?.documents)! {
-						let photo = Photo(documentSnapshot: doc)
-						editingPhotos.append(photo)
-					}
-				})
 				for i in 0..<self.photoBuckets.count {
-					if editingPhotos.contains(self.photoBuckets[i]) {
-						
+					let index = IndexPath(row: i, section: 0)
+					if self.tableView(self.tableView, canEditRowAt: index) {
+						self.tableView(self.tableView, willBeginEditingRowAt: index)
 					}
 				}
+				print(self.editingMode)
 			} else {
 				self.editingMode = false
+				self.setEditing(false, animated: true)
 			}
 		}
 		editPhotoButton.isEnabled = false
@@ -233,7 +225,7 @@ class PhotoBucketTableViewController: UITableViewController {
 						  "https://upload.wikimedia.org/wikipedia/commons/6/6b/Mount_Carmel_forest_fire14.jpg"]
 		let randomIndex = Int(arc4random_uniform(UInt32(testImages.count)))
 		return testImages[randomIndex];
-
+		
 	}
 	
 	override func setEditing(_ editing: Bool, animated: Bool) {
@@ -260,7 +252,7 @@ class PhotoBucketTableViewController: UITableViewController {
 		return cell
 	}
 	
-
+	
 	
 	// Override to support conditional editing of the table view.
 	override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -269,7 +261,7 @@ class PhotoBucketTableViewController: UITableViewController {
 		}
 		return false
 	}
-
+	
 	
 	
 	// Override to support editing the table view.
